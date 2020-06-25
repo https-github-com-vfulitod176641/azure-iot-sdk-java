@@ -298,32 +298,26 @@ public class DeviceMethodCommon extends IntegrationTest
         this.testInstance.dispose();
     }
 
-    protected static class RunnableInvoke implements Runnable
+    public static class RunnableInvoke implements Runnable
     {
         protected String deviceId;
         protected String moduleId;
         protected String testName;
-        protected CountDownLatch latch;
         protected MethodResult result = null;
         protected DeviceMethod methodServiceClient;
         protected Exception exception = null;
 
-        public RunnableInvoke(DeviceMethod methodServiceClient, String deviceId, String moduleId, String testName, CountDownLatch latch)
+        public RunnableInvoke(DeviceMethod methodServiceClient, String deviceId, String moduleId, String testName)
         {
             this.methodServiceClient = methodServiceClient;
             this.deviceId = deviceId;
             this.moduleId = moduleId;
             this.testName = testName;
-            this.latch = latch;
         }
 
         @Override
         public void run()
         {
-            // Arrange
-            exception = null;
-
-            // Act
             try
             {
                 if (moduleId != null)
@@ -340,8 +334,6 @@ public class DeviceMethodCommon extends IntegrationTest
             {
                 exception = e;
             }
-
-            latch.countDown();
         }
 
         public String getExpectedPayload()

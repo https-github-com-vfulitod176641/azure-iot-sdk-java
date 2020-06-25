@@ -66,27 +66,33 @@ public class DeviceMethodTests extends DeviceMethodCommon
     public void invokeMethodInvokeParallelSucceed() throws Exception
     {
         // Arrange
-        CountDownLatch cdl = new CountDownLatch(NUMBER_INVOKES_PARALLEL);
         List<RunnableInvoke> runs = new LinkedList<>();
+        List<Thread> threads = new LinkedList<>();
 
         for (int i = 0; i < NUMBER_INVOKES_PARALLEL; i++)
         {
             RunnableInvoke runnableInvoke;
             if (testInstance.identity instanceof Module)
             {
-                runnableInvoke = new RunnableInvoke(methodServiceClient, testInstance.identity.getDeviceId(), ((Module) testInstance.identity).getId(),"Thread" + i, cdl);
+                runnableInvoke = new RunnableInvoke(methodServiceClient, testInstance.identity.getDeviceId(), ((Module) testInstance.identity).getId(),"Thread" + i);
             }
             else
             {
-                runnableInvoke = new RunnableInvoke(methodServiceClient, testInstance.identity.getDeviceId(), null,"Thread" + i, cdl);
+                runnableInvoke = new RunnableInvoke(methodServiceClient, testInstance.identity.getDeviceId(), null,"Thread" + i);
             }
-            new Thread(runnableInvoke).start();
+
+            Thread invokeMethodThread = new Thread(runnableInvoke);
+            threads.add(invokeMethodThread);
+            invokeMethodThread.start();
             runs.add(runnableInvoke);
         }
 
-        cdl.await(3, TimeUnit.MINUTES);
+        for (Thread invokeMethodThread : threads)
+        {
+            invokeMethodThread.join(60 * 1000); // At most, wait 1 minute for each thread to finish
+        }
 
-        for (RunnableInvoke run:runs)
+        for (RunnableInvoke run : runs)
         {
             MethodResult result = run.getResult();
             assertNotNull(buildExceptionMessage(run.getException() == null ? "Runnable returns null without exception information" : run.getException().getMessage(), testInstance.deviceTestManager.client), result);
