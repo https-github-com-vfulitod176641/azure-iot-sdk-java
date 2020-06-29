@@ -50,7 +50,7 @@ public final class IotHubReceiveTask implements Runnable
                     {
                         // AMQP and MQTT layers will notify the IoTHubTransport layer once a message arrives, and at
                         // that time, this thread will be notified to handle them.
-                        this.receiveThreadLock.wait();
+                        //this.receiveThreadLock.wait();
                     }
                 }
             }
