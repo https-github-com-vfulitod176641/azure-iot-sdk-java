@@ -46,7 +46,7 @@ public final class IotHubSendTask implements Runnable
                 {
                     // IotHubTransport layer will notify this thread once a message is ready to be sent or a callback is ready
                     // to be executed. Until then, do nothing.
-                    this.sendThreadLock.wait();
+                    //this.sendThreadLock.wait();
                 }
 
                 this.transport.sendMessages();
